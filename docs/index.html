@@ -74,7 +74,7 @@
     p {
       font-size: 1.1rem;
       color: #555;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
     }
 
     input {
@@ -84,7 +84,7 @@
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       transition: all 0.3s ease;
       background-color: #fffefc;
@@ -100,15 +100,42 @@
       }
     }
 
+    .suggestions {
+      max-width: 450px;
+      width: 90%;
+      margin: 0 auto 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fffefc;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: left;
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: 16px;
+      position: relative;
+      z-index: 1000;
+      display: none;
+    }
+
+    .suggestion-item {
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+
+    .suggestion-item:hover, .suggestion-item.active {
+      background-color: #f3e9e1;
+    }
+
     .result {
       font-size: 1.2rem;
       color: #3b3b3b;
-      margin-top: 20px;
+      margin-top: 10px;
       background-color: #ffffffcc;
       padding: 15px 20px;
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       max-width: 90%;
+      white-space: pre-line;
       opacity: 0;
       transform: translateY(10px);
       transition: opacity 0.6s ease, transform 0.6s ease;
@@ -146,7 +173,8 @@
   <div class="divider"></div>
   <p>Please find your seat by entering your name below:</p>
 
-  <input type="text" id="searchInput" placeholder="Start typing your name..." />
+  <input type="text" id="searchInput" placeholder="Start typing your name..." autocomplete="off" />
+  <div id="suggestions" class="suggestions"></div>
   <div class="result" id="resultDisplay"></div>
 
   <script>
@@ -224,30 +252,91 @@
 
     const input = document.getElementById('searchInput');
     const resultDisplay = document.getElementById('resultDisplay');
+    const suggestions = document.getElementById('suggestions');
+
+    let selectedSuggestionIndex = -1;
+    let currentMatches = [];
 
     input.addEventListener('input', () => {
-      const searchTerm = input.value.trim().toLowerCase();
-      if (!searchTerm) {
+      const val = input.value.trim().toLowerCase();
+
+      if (!val) {
+        suggestions.style.display = 'none';
         resultDisplay.textContent = '';
         resultDisplay.classList.remove('visible');
+        selectedSuggestionIndex = -1;
         return;
       }
 
-      // Find guests with matching name (partial)
-      const matches = guestList.filter(guest => guest.name.toLowerCase().includes(searchTerm));
+      currentMatches = guestList.filter(g => g.name.toLowerCase().includes(val));
 
-      if (matches.length === 1) {
-        const match = matches[0];
-        resultDisplay.textContent = `${match.name} is seated at ${match.table}.`;
-      } else if (matches.length > 1) {
-        // Multiple matches found
-        resultDisplay.textContent = `Multiple guests found:\n` + matches.map(m => `${m.name} - ${m.table}`).join('\n');
-      } else {
+      if (currentMatches.length === 0) {
+        suggestions.style.display = 'none';
         resultDisplay.textContent = 'Name not found. Please try again.';
+        resultDisplay.classList.add('visible');
+        selectedSuggestionIndex = -1;
+        return;
       }
 
-      resultDisplay.classList.add('visible');
+      suggestions.innerHTML = currentMatches.map((g, i) => 
+        `<div class="suggestion-item" data-index="${i}">${g.name}</div>`
+      ).join('');
+      suggestions.style.display = 'block';
+
+      selectedSuggestionIndex = -1;
+      resultDisplay.textContent = '';
+      resultDisplay.classList.remove('visible');
     });
+
+    suggestions.addEventListener('click', e => {
+      if (e.target.classList.contains('suggestion-item')) {
+        const index = Number(e.target.getAttribute('data-index'));
+        selectSuggestion(index);
+      }
+    });
+
+    input.addEventListener('keydown', e => {
+      const items = suggestions.querySelectorAll('.suggestion-item');
+      if (suggestions.style.display === 'block') {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (selectedSuggestionIndex < items.length - 1) {
+            selectedSuggestionIndex++;
+            updateActiveSuggestion(items);
+          }
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (selectedSuggestionIndex > 0) {
+            selectedSuggestionIndex--;
+            updateActiveSuggestion(items);
+          }
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (selectedSuggestionIndex > -1) {
+            selectSuggestion(selectedSuggestionIndex);
+          }
+        } else if (e.key === 'Escape') {
+          suggestions.style.display = 'none';
+        }
+      }
+    });
+
+    function updateActiveSuggestion(items) {
+      items.forEach(item => item.classList.remove('active'));
+      if (selectedSuggestionIndex > -1) {
+        items[selectedSuggestionIndex].classList.add('active');
+      }
+    }
+
+    function selectSuggestion(index) {
+      const guest = currentMatches[index];
+      if (!guest) return;
+
+      input.value = guest.name;
+      suggestions.style.display = 'none';
+      resultDisplay.textContent = `${guest.name} is seated at ${guest.table}.`;
+      resultDisplay.classList.add('visible');
+    }
   </script>
 </body>
 </html>
