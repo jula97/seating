@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Please Find Your Seat</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Roboto&display=swap');
@@ -150,15 +150,77 @@
   <div class="result" id="resultDisplay"></div>
 
   <script>
-    const guestList = [
-      { name: "Sanjula Thiranjaya", table: "Table 3" },
-      { name: "Saumya Balasooriya", table: "Table 3" },
-      { name: "Pasindu Jayasinghe", table: "Table 5" },
-      { name: "Whitney Silva", table: "Table 5" },
-      { name: "Shamith Abeywickrama", table: "Table 7" },
-      { name: "Kasun Perera", table: "Table 2" },
-      { name: "Nimali Herath", table: "Table 1" }
+    const guestNames = [
+      "Shamith Nirmal",
+      "Savindu Thanuka",
+      "Chulakshi Welikala",
+      "Pasindu Sandima",
+      "Whitney Rosheli",
+      "Dilanka Laknath",
+      "Chathura Weerasinghe",
+      "Chamiru Senerath",
+      "Sahan Gurusinghe",
+      "Thiruparan Ravikkumar",
+      "Manisha Nilukshi",
+      "Achira Sandeepa",
+      "Sampath*",
+      "Danuka*",
+      "Ajeeth*",
+      "Manthila*",
+      "Thamara",
+      "Shakya*",
+      "Amila",
+      "Dulshan",
+      "Peyshala",
+      "Janindu",
+      "Lakshan",
+      "Disura",
+      "Tharushi",
+      "Taxy",
+      "Madhawa",
+      "Pulasthi",
+      "Sudeepa",
+      "Janitha",
+      "Binara",
+      "Rachitha",
+      "Anupa",
+      "Ashen",
+      "Randika",
+      "Chathura",
+      "Aari",
+      "Hasanka Sandujith",
+      "Lahiru Nawarathna",
+      "Punsara Mahawela",
+      "Charith Janaka",
+      "Sudarsha Lakmal",
+      "Tharuka Nilupul",
+      "Wishwa Madusanka",
+      "Randika Viraj",
+      "Sameera Hemachandra",
+      "Thiruventhan Ashokkumar",
+      "Kaveesha Yalegama",
+      "Hasith Ishara",
+      "Supun Kuruppu",
+      "Dumindu Nadeera",
+      "Banuka Praneeth",
+      "Yasiru",
+      "Himantha Alahakoon",
+      "Chamindu Sauranga",
+      "Chathuni Wijegunawardana",
+      "Pahan Mendis",
+      "Rachel Paul",
+      "Kasun Tharaka",
+      "Sagara Kavindra",
+      "Dr Ajith Pasqual",
+      "Pathum",
+      "Visal"
     ];
+
+    // Assign tables of 12 guests each
+    const guestList = guestNames.map((name, idx) => {
+      const tableNumber = Math.floor(idx / 12) + 1;
+      return { name, table: `Table ${tableNumber}` };
+    });
 
     const input = document.getElementById('searchInput');
     const resultDisplay = document.getElementById('resultDisplay');
@@ -171,10 +233,15 @@
         return;
       }
 
-      const match = guestList.find(guest => guest.name.toLowerCase().includes(searchTerm));
+      // Find guests with matching name (partial)
+      const matches = guestList.filter(guest => guest.name.toLowerCase().includes(searchTerm));
 
-      if (match) {
+      if (matches.length === 1) {
+        const match = matches[0];
         resultDisplay.textContent = `${match.name} is seated at ${match.table}.`;
+      } else if (matches.length > 1) {
+        // Multiple matches found
+        resultDisplay.textContent = `Multiple guests found:\n` + matches.map(m => `${m.name} - ${m.table}`).join('\n');
       } else {
         resultDisplay.textContent = 'Name not found. Please try again.';
       }
