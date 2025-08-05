@@ -187,8 +187,7 @@
   <div id="suggestions" class="suggestions"></div>
   <div class="result" id="resultDisplay"></div>
 
-  <!-- Table location map image -->
-  <img src="media/table_map.png" alt="Table Location Map" class="table-map" id="tableMapImg" style="display:none" />
+
 
   <script>
     // Full guest list with explicit table assignments
@@ -536,8 +535,7 @@
     input.addEventListener('input', () => {
       const val = input.value.trim().toLowerCase();
 
-      // Hide the table map image on new input
-      document.getElementById('tableMapImg').style.display = 'none';
+
 
       if (!val) {
         suggestions.style.display = 'none';
@@ -615,8 +613,7 @@
       suggestions.style.display = 'none';
       resultDisplay.textContent = `${guest.name} is seated at ${guest.table}.`;
       resultDisplay.classList.add('visible');
-      // Show the table map image
-      document.getElementById('tableMapImg').style.display = 'block';
+
     }
   </script>
 </body>
