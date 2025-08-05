@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Please Find Your Seat</title>
   <style>
+    .table-map {
+      margin-top: 40px;
+      max-width: 95vw;
+      width: 500px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      background: #fffefc;
+      padding: 12px;
+      display: block;
+    }
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Roboto&display=swap');
 
     body {
@@ -176,6 +186,9 @@
   <input type="text" id="searchInput" placeholder="Start typing your name..." autocomplete="off" />
   <div id="suggestions" class="suggestions"></div>
   <div class="result" id="resultDisplay"></div>
+
+  <!-- Table location map image -->
+  <img src="media/table-map.jpg" alt="Table Location Map" class="table-map" />
 
   <script>
     // Full guest list with explicit table assignments
